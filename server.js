@@ -1,11 +1,9 @@
-const config = require("config");
-const express = require("express");
-const app = express();
+const config = require('config');
+const { server } = require('./src/app');
+require('./src/socket');
 
-const PORT = process.env.PORT || config.get("port");
+const PORT = process.env.PORT || config.get('port');
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-app.get("/", (req, res) => {
-  res.status(200).send("hello world!");
-});
-
-app.listen(PORT, () => console.log(`server is running ${PORT}`));
+//USER 6055d1a966b643b1e4711d50
+// app.use(express.static(path.join(__dirname, 'public'))); for test
