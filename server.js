@@ -1,6 +1,7 @@
 const config = require('config');
 const { server } = require('./src/app');
 require('./src/socket');
+require('./src/room');
 
 const PORT = process.env.PORT || config.get('port');
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

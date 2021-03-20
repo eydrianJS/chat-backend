@@ -15,7 +15,7 @@ exports.connect = async () =>
     });
   });
 
-exports.findAll = async (client) =>
+exports.findAll = async (client, collectionName) =>
   new Promise((resolve, reject) => {
     client
       .db(dbName)
