@@ -1,4 +1,5 @@
-const { router } = require('./app');
+const express = require('express');
+const router = express.Router();
 const { connect, findAll, findOne, pushMessage, insertOne } = require('../db');
 const jwtDecode = require('jwt-decode');
 
@@ -49,3 +50,5 @@ router.get('/room/:id', async (req, res) => {
     res.json(e);
   }
 });
+
+module.exports = router;

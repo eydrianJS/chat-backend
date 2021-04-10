@@ -43,6 +43,20 @@ exports.findOne = async (client, collectionName, id) =>
       });
   });
 
+exports.findByQuery = async (client, collectionName, query) =>
+  new Promise((resolve, reject) => {
+    client
+      .db(dbName)
+      .collection(collectionName)
+      .find(query)
+      .toArray((err, res) => {
+        if (err != null) {
+          return reject(err);
+        }
+        resolve(res);
+      });
+  });
+
 exports.pushMessage = async (client, collectionName, id, msg) =>
   new Promise((resolve, reject) => {
     const query = { _id: ObjectID(id) };
