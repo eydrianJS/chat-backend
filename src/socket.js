@@ -39,6 +39,54 @@ connect().then((client) => {
       // Runs when client disconnects
       disconect(socket);
     });
+
+    socket.on('joinToPrivateRoom', async ({ userId, roomId }) => {
+      const dbUser = await findOne(client, 'Users', userId);
+      const privateRoom = await findOne(client, 'Rooms', roomId);
+      if (!dbUser || !privateRoom) {
+        return socket.emit('private_message', 'Unauth');
+      }
+      const hasAccess = privateRoom?.usersWithCredentials.filter((user) => {
+        return user._id == userId;
+      });
+
+      if (!hasAccess?.length) {
+        return socket.emit('private_message', 'Unauth');
+      }
+      const user = userJoin(socket.id, dbUser.userName, dbUser, roomId);
+
+      socket.join(user.room);
+      // Welcome current user
+      socket.emit('private_message', formatMessage(botName, 'Welcome to Chat!'));
+      //load chat history
+      loadAllMessage(socket, privateRoom);
+      // Broadcast when a user connects
+      socket.broadcast
+        .to(user.room)
+        .emit('private_message', formatMessage(botName, `${user.username} has joined the chat`));
+
+      // Send users and room info
+      io.to(user.room).emit('roomUsers', {
+        room: privateRoom.name,
+        users: getRoomUsers(user.room),
+      });
+
+      //   // Listen for chatMessage
+      saveAndSendMessage(socket, client);
+
+      //   // Runs when client disconnects
+      disconect(socket);
+    });
+
+    socket.on('getRooms', async () => {
+      try {
+        const client = await connect();
+        let total = await findAll(client, 'Rooms');
+        socket.emit('rooms', total);
+      } catch (e) {
+        socket.emit('rooms', e);
+      }
+    });
   });
 });
 
