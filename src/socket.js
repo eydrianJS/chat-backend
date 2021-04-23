@@ -5,7 +5,7 @@ const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('../utils/
 const { connect, findOne, insertOne, pushMessage } = require('../db');
 const formatMessage = require('../utils/messages');
 const io = socketio(server);
-const PUBLIC_ROOM = '6055d25366b643b1e4711d5c';
+const PUBLIC_ROOM = '60831de6ffc279002e1e35dd';
 const botName = 'Chat Bot ';
 
 const zakazaneSlowa = ['kurwa', 'chuj', 'czarny', 'gwałt'];
@@ -13,8 +13,11 @@ const zakazaneSlowa = ['kurwa', 'chuj', 'czarny', 'gwałt'];
 connect().then((client) => {
   io.on('connection', (socket) => {
     socket.on('joinToPublicRoom', async ({ userId }) => {
+      // console.log('🚀 ~ file: socket.js ~ line 16 ~ socket.on ~ userId', userId);
+      console.log('🚀 ~ file: socket.js ~ line 33 ~ socket.on ~ userId', userId);
       const dbUser = await findOne(client, 'Users', userId);
-      const publicRoom = await findOne(client, 'Rooms', '6055d25366b643b1e4711d5c');
+      console.log('🚀 ~ file: socket.js ~ line 19 ~ socket.on ~ dbUser', dbUser);
+      const publicRoom = await findOne(client, 'Rooms', PUBLIC_ROOM);
       const user = userJoin(socket.id, dbUser.userName, dbUser, 'publicRoom');
 
       socket.join(user.room);
