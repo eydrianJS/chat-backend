@@ -55,7 +55,7 @@ const register = async (req, res, next) => {
           });
         }
       }
-      await insertOne(
+      const user = await insertOne(
         client,
         'Users',
         new User({
@@ -66,7 +66,12 @@ const register = async (req, res, next) => {
         })
       );
 
-      return res.json({ message: 'success' });
+      console.log('🚀 ~ file: AuthController.js ~ line 68 ~ bcryptjs.hash ~ user', user);
+      let token = jwt.sign({ uid: user }, 'verySecretValue', { expiresIn: '12h' });
+      res.status(200).json({
+        token,
+        user,
+      });
     } catch (e) {
       return res.json(e);
     }
