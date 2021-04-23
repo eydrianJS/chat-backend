@@ -1,14 +1,14 @@
 const moment = require('moment');
 const socketio = require('socket.io');
 const { server } = require('./app');
-
 const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('../utils/users');
 const { connect, findOne, insertOne, pushMessage } = require('../db');
 const formatMessage = require('../utils/messages');
-
 const io = socketio(server);
 const PUBLIC_ROOM = '6055d25366b643b1e4711d5c';
 const botName = 'Chat Bot ';
+
+const zakazaneSlowa = ['kurwa', 'chuj', 'czarny', 'gwałt'];
 
 connect().then((client) => {
   io.on('connection', (socket) => {
@@ -103,6 +103,14 @@ const saveAndSendMessage = (socket, client) => {
   socket.on('chatMessage', async (msg) => {
     const user = getCurrentUser(socket.id);
     const date = moment().toISOString();
+    const slowa = zakazaneSlowa.filter((item) => {
+      return msg.indexOf(item) > -1;
+    });
+
+    if (!!slowa.length) {
+      return socket.emit('message', formatMessage(botName, 'Prosze nie używać takich słów'));
+    }
+
     const json = {
       creator: user.dbUser,
       content: msg,
